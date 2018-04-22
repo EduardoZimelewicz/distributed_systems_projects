@@ -4,6 +4,34 @@
 #include<stddef.h>
 #include<math.h>
 
+typedef struct Ponto{
+    double x;
+    double y;
+    double lastDistance;
+    int id_cluster;
+} Ponto;
+
+typedef struct Cluster{
+    double x_centroid;
+    double y_centroid;
+    int id_cluster;
+} Cluster;
+
+//Função que inicializa os data types ponto e cluster
+void initTypes(MPI_Datatype* pontoType, MPI_Datatype* clusterType){
+    int blockLenghtsPonto[3] = {1,1,1};
+    int blockLenghtsCluster[3] = {1,1,1};
+    MPI_Datatype typesPonto[4] = {MPI_INT,MPI_DOUBLE,MPI_DOUBLE,MPI_DOUBLE};
+    MPI_Datatype typesCluster[3] = {MPI_INT,MPI_DOUBLE,MPI_DOUBLE};
+    MPI_Aint dispPonto[4] = {offsetof(Ponto,id_cluster),offsetof(Ponto,x),offsetof(Ponto,y),offsetof(Ponto,lastDistance)};
+    MPI_Aint dispCluster[3] = {offsetof(Cluster,id_cluster), offsetof(Cluster,x_centroid),offsetof(Cluster,y_centroid)};
+    MPI_Type_create_struct( 4, blockLenghtsPonto, dispPonto, typesPonto, pontoType );
+    MPI_Type_create_struct( 3, blockLenghtsCluster, dispCluster, typesCluster, clusterType );
+    MPI_Type_commit(pontoType);
+    MPI_Type_commit(clusterType);
+}
+
+
 double euclidian_dist(double point_x, double point_y, double centr_x, double centr_y) {
     return sqrt(pow((point_x - centr_x),2) + pow((point_y - centr_y),2));
 }
@@ -84,6 +112,9 @@ int main (int argc, char *argv[]) {
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &num_tasks);
     
+    //A partir de agora pode utilizar os tipos MPI_PONTOTYPE e MPI_CLUSTERTYPE para trocar informações desse tipo
+    MPI_Datatype MPI_PONTOTYPE, MPI_CLUSTERTYPE;
+    initTypes(&MPI_PONTOTYPE, &MPI_CLUSTERTYPE);
     /*
     check if array can be divided
     by the number of tasks proposed
