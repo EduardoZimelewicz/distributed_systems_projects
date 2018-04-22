@@ -28,8 +28,7 @@ void assign_point(double point[8][4], int point_id, double cluster[2][2], int cl
     }
 }
 
-/*
-void update_centroids(int offset, T_point * points, int points_len, double centr_x, double centr_y, int cluster_id) {
+void update_centroids(int offset, int chunk_size, double points[8][4], double cluster[2][2], int cluster_id) {
     int itr_points = 0;
     double sum_x, sum_y = 0.0;
     double n_cluster_pts = 0.0;
@@ -41,28 +40,27 @@ void update_centroids(int offset, T_point * points, int points_len, double centr
     new_ctr_y = 0.0;
     n_cluster_pts = 0.0;
     
-    for(itr_points = offset; itr_points < points_len; itr_points++){
-        
-        if(points[itr_points].cluster_id == cluster_id){
-            n_cluster_pts++;
-            sum_x += points[itr_points].point_x;
-            sum_y += points[itr_points].point_y;
+        for(itr_points = offset; itr_points < chunk_size + offset; itr_points++){
+            
+            if(points[itr_points][3] == cluster_id){
+                n_cluster_pts++;
+                sum_x += points[itr_points][0];
+                sum_y += points[itr_points][1];
+            }
         }
-    }
     new_ctr_x = sum_x / n_cluster_pts;
     new_ctr_y = sum_y / n_cluster_pts;
 
-    if(new_ctr_x != centr_x && new_ctr_y != centr_y){
-        centr_x = new_ctr_x;
-        centr_y = new_ctr_y;
-        printf("Centroid from cluster %d changed!\n", cluster_id);
+    if(new_ctr_x != cluster[cluster_id][0] || new_ctr_y != cluster[cluster_id][1]){
+        cluster[cluster_id][0] = new_ctr_x;
+        cluster[cluster_id][1] = new_ctr_y;
+        //printf("Centroid from cluster %d changed!\n", cluster_id);
     }
 
     else {
-        printf("Centroid from cluster %d stayed the same...\n", cluster_id);
+        //printf("Centroid from cluster %d stayed the same...\n", cluster_id);
     }
 }
-*/
 
 void print_clusters(double point[8][4], double cluster[2][2]){
     int itr_points = 0;
@@ -137,11 +135,19 @@ int main (int argc, char *argv[]) {
             }
             itr_p = offset;
         }
+        
+        for(itr_c = 0; itr_c < cluster_t_size; itr_c++) {
+            update_centroids(offset, chunk_size, points, clusters_centroids, itr_c);
+        }
+
         int tasks;
         for(tasks = 1; tasks < num_tasks; tasks++){
             MPI_Recv(&offset, 1, MPI_INT, tasks, tag_1, MPI_COMM_WORLD, &status);
             MPI_Recv(&points[offset], chunk_size, MPI_DOUBLE, tasks, tag_2, MPI_COMM_WORLD, &status);
         }
+
+        print_clusters(points, clusters_centroids);
+
     }
 
     // ================== WORKER ======================
@@ -160,14 +166,19 @@ int main (int argc, char *argv[]) {
             }
             itr_p = offset;
         }
+
+        for(itr_c = 0; itr_c < cluster_t_size; itr_c++) {
+            update_centroids(offset, chunk_size, points, clusters_centroids, itr_c);
+        }
+
         dest = 0;
         MPI_Send(&offset, 1, MPI_INT, dest, tag_1, MPI_COMM_WORLD);
         MPI_Send(&points[offset], chunk_size, MPI_DOUBLE, dest, tag_2, MPI_COMM_WORLD);
 
+        print_clusters(points, clusters_centroids);
     }
 
-    print_clusters(points, clusters_centroids);
-
     MPI_Finalize();
+
     return 0;
 }
