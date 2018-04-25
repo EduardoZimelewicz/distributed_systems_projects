@@ -172,8 +172,12 @@ int main (int argc, char *argv[]) {
 				MPI_Bcast(&info, 1, MPI_INFOTYPE, 0 ,MPI_COMM_WORLD);
 				//printf("Centroide de %d: (%f,%f)\n", i, clusters[i].x_centroid,clusters[i].y_centroid);
 			}
+			int aux = 1;
 			for(i = 1; i < num_tasks; i++){
-				MPI_Recv(&stable,1, MPI_INT, i, 50, MPI_COMM_WORLD, &status);	
+				MPI_Recv(&aux,1, MPI_INT, i, 50, MPI_COMM_WORLD, &status);	
+				if(!aux){
+					stable = 1;
+				}
 			}
 			MPI_Bcast(&stable, 1, MPI_INT, 0, MPI_COMM_WORLD);
 		}
