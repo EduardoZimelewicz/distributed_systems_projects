@@ -13,4 +13,3 @@ and then
 mpirun -np 2 k_means
 ```
 
-Note: The matrix for points and clusters is fixed, you should test with 2, 4 or 8 tasks only for now...
