@@ -58,19 +58,25 @@ int assign_point(Ponto* pts, int numPoints, Cluster* clts, int numClusters) { //
 	return stable;
 }
 
+// Made a little change here for testing with more points
 int main (int argc, char *argv[]) {
-	Ponto points[8] = { {x:1.0, y:1.0, id_cluster:-1},
+	Ponto points[11] = { {x:1.0, y:1.0, id_cluster:-1},
 		{x:1.5, y:2.0, id_cluster:-1},
 		{x:3.0, y:4.0, id_cluster:-1},
 		{x:5.0, y:7.0, id_cluster:-1},
 		{x:3.5, y:5.0, id_cluster:-1},
 		{x:4.5, y:5.0, id_cluster:-1},
 		{x:3.5, y:4.5, id_cluster:-1},
-		{x:2.5, y:1.5, id_cluster:-1}
+		{x:2.5, y:1.5, id_cluster:-1},
+		{x:8.0, y:7.5, id_cluster:-1},
+		{x:9.0, y:8.0, id_cluster:-1},
+		{x:-2.5, y:-1.5, id_cluster:-1}
 	};
 
-	Cluster clusters[2] = { {x_centroid:0.0, y_centroid:0.0},
-		{x_centroid:7.5, y_centroid:7.6}
+	// Made a little change for testing with one more cluster...
+	Cluster clusters[3] = { {x_centroid:0.0, y_centroid:0.0},
+		{x_centroid:7.5, y_centroid:7.6},
+		{x_centroid:3.75, y_centroid:3.8}
 	};
 
 
@@ -81,12 +87,6 @@ int main (int argc, char *argv[]) {
 
 	MPI_Datatype MPI_INFOTYPE;
 	initTypes(& MPI_INFOTYPE);
-
-	/*
-	   check if array can be divided
-	   by the number of tasks proposed
-	 */
-
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &task_id);
 
@@ -126,7 +126,6 @@ int main (int argc, char *argv[]) {
 			int i;
 			for (i = 0 ; i<chunk_size; i++){
 				Ponto pt = myPoints[i];
-				//printf("Eu sou %d e Ponto (%f,%f) no cluster %d\n",task_id, pt.x,pt.y,pt.id_cluster);
 			}
 
 			//Current sum_x and sum_y in each Cluster
@@ -135,7 +134,7 @@ int main (int argc, char *argv[]) {
 			//Current number of points in each Cluster
 			int numberOfPoints[cluster_number];
 
-			//Não tenho certeza se o C inicia tudo 0, então quis garantir
+			//Initialize arrays
 			for (i=0 ; i<cluster_number;i++){
 				sum_x[i] = 0.0;
 				sum_y[i] = 0.0;
@@ -167,10 +166,9 @@ int main (int argc, char *argv[]) {
 			for (i = 0; i<cluster_number; i++){
 				clusters[i].x_centroid = sum_x[i]/numberOfPoints[i];
 				clusters[i].y_centroid = sum_y[i]/numberOfPoints[i];
-				//Using numPoints as identifier of Cluster (Gambiarraça)
+				//Using numPoints as identifier of Cluster
 				Info info = {x: clusters[i].x_centroid, y: clusters[i].y_centroid, numPoints:i};
 				MPI_Bcast(&info, 1, MPI_INFOTYPE, 0 ,MPI_COMM_WORLD);
-				//printf("Centroide de %d: (%f,%f)\n", i, clusters[i].x_centroid,clusters[i].y_centroid);
 			}
 			int aux = 1;
 			for(i = 1; i < num_tasks; i++){
@@ -195,7 +193,6 @@ int main (int argc, char *argv[]) {
 			int j;
 			for (i = 0 ; i<chunk_size; i++){
 				Ponto pt = myPoints[i];
-				//printf("Eu sou %d e Ponto (%f,%f) no cluster %d\n",task_id, pt.x,pt.y,pt.id_cluster);
 			}
 
 			//Current sum_x and sum_y in each Cluster
@@ -204,7 +201,7 @@ int main (int argc, char *argv[]) {
 			//Current number of points in each Cluster
 			int numberOfPoints[cluster_number];
 
-			//Não tenho certeza se o C inicia tudo 0, então quis garantir
+			//Initialize arrays
 			for (i=0 ; i<cluster_number;i++){
 				sum_x[i] = 0.0;
 				sum_y[i] = 0.0;
@@ -227,12 +224,11 @@ int main (int argc, char *argv[]) {
 
 			//Calculate new Cluster Centroids
 			for (i =0; i<cluster_number; i++){
-				//Using numPoints as identifier of Cluster (Gambiarraça)
+				//Using numPoints as identifier of Cluster
 				Info info;
 				MPI_Bcast(&info, 1, MPI_INFOTYPE, 0 ,MPI_COMM_WORLD);
 				clusters[i].x_centroid = info.x;
 				clusters[i].y_centroid = info.y;
-				//printf("Centroide de %d: (%f,%f)\n", i, clusters[i].x_centroid,clusters[i].y_centroid);
 			}
 			MPI_Send(&stable, 1, MPI_INT, 0, 50, MPI_COMM_WORLD);
 			MPI_Bcast(&stable, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -242,6 +238,7 @@ int main (int argc, char *argv[]) {
 			printf("Ponto ( %f, %f ) no cluster %d\n", myPoints[itr_points].x, myPoints[itr_points].y, myPoints[itr_points].id_cluster);
 		}          
 	}
+
 	MPI_Finalize();
 	return 0;
 }
