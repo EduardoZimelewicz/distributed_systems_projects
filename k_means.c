@@ -87,28 +87,42 @@ int main (int argc, char *argv[]) {
 	   by the number of tasks proposed
 	 */
 
+
 	MPI_Comm_rank(MPI_COMM_WORLD, &task_id);
 
 	int points_t_size = sizeof(points)/sizeof(Ponto);
 	int cluster_number = sizeof(clusters)/sizeof(Cluster);
 
-	//Considerar resto!!!
+	int resto = points_t_size % num_tasks;
 	chunk_size = (points_t_size / num_tasks);
 
 	//myPoints contains all Points that are responsability from current rank
-	Ponto myPoints[chunk_size];
-	int i;
-	for(i=0; i<chunk_size;i++){
-		myPoints[i] = points[task_id*chunk_size+i];  
+	if(resto){
+		if(task_id == num_tasks-1){
+			chunk_size += resto;
+		}
 	}
 
+	Ponto myPoints[chunk_size];
+
+	if(task_id != num_tasks-1){
+		int i;
+		for(i = 0; i < chunk_size;i++){
+			myPoints[i] = points[task_id*chunk_size+i];  
+		}
+	} else {
+		int i;
+		for(i = 0 ; i < chunk_size; i++){
+			myPoints[i] = points[points_t_size-1 - i];	
+		}
+	}
+
+
 	if(task_id == 0){
-		//Stop criteria is number of iterations, current is 5;
 		int stable = 0;
 		while(!stable){
 			//Define myPoints Clusters and save x and y from current Cluster
 			stable = assign_point(myPoints, chunk_size, clusters, cluster_number);
-			iterations++;
 			int i;
 			for (i = 0 ; i<chunk_size; i++){
 				Ponto pt = myPoints[i];
@@ -170,7 +184,6 @@ int main (int argc, char *argv[]) {
 		}            
 	}
 	else{
-		//Stop criteria is number of iterations, current is 5
 		int stable = 0;
 		while(!stable){    
 			stable = assign_point(myPoints, chunk_size, clusters, cluster_number);
