@@ -1,15 +1,5 @@
-# distributed_systems_projects
-Repository for distributed systems class
+#Repository for distributed systems course
 
-For running the first k means draft use:
+- First work is the k_means parallel code with MPI
 
-```
-mpicc k_means.c -o k_means -lm
-```
-
-and then
-
-```
-mpirun -np 2 k_means
-```
-
+- Second work is Java RMI Printer Server project with Client
