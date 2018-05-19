@@ -9,6 +9,6 @@ obs: the same as hello example, but there are a few modifications
 - Change the paths for printServer & printClient
 
 - If occurs a unmarshalling exception, kill the rmiregistry with:
-´´´
+```
 fuser -k 1099/tcp
-´´´
+```
