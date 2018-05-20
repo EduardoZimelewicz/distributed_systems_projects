@@ -10,7 +10,6 @@ import java.rmi.server.UnicastRemoteObject;
 public class PrintServer extends UnicastRemoteObject implements Print {
     
     private static final long serialVersionUID = 1L;
-    private int numberOfPrinters = 2;
     private File output;
     private FileWriter writer;
 
