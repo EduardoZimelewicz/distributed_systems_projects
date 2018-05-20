@@ -1,9 +1,0 @@
-
-printer1(paulo: oi)
-printer0(paulo: koe ts)
-printer1(paulo: quem é?)
-printer0(paulo: sou eu po)
-printer1(paulo: marcolinha?)
-printer0(paulo: koe lek ta onde?)
-printer1(paulo: na republica po)
-printer0(paulo: kakakaka)
