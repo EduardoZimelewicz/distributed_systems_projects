@@ -32,21 +32,7 @@ public class PrintServer extends UnicastRemoteObject implements Print {
         if (buffer.size() == 3) {
             return "\nBuffer is full. Try again later.";
         }
-        /*if (printer0.getState() != State.TIMED_WAITING) {
-            writer = new FileWriter(output, true);
-            writer.write(name + ": " + message + "\n");
-            System.out.println("printed");
-            writer.close();
-            printer0.sleep(10000);
-            return "Printed to output.txt";
-        } else if (printer1.getState()!= State.TIMED_WAITING) {
-            writer = new FileWriter(output, true);
-            writer.write(name + ": " + message + "\n");
-            System.out.println("printed");
-            writer.close();
-            printer1.sleep(10000);
-            return "Printed to output.txt";
-        }*/
+        
         else{
             PrintRequest req = new PrintRequest(name,message);
             

@@ -31,16 +31,5 @@ public class PrintClient {
             message = keyboard.nextLine();
         }
         keyboard.close();
-
-        
-        /*for (int itr = 0; itr < 5; itr++){
-            clients.add(new ClientThread(itr)); 
-        }
-
-        for (int itr = 0; itr < 5; itr++){
-            clients.get(itr).start();
-            //clients.get(itr).sleep(100);
-            System.out.println("Client Thread " + itr + " started");
-        }*/
     }
 }
