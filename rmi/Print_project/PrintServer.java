@@ -24,7 +24,7 @@ public class PrintServer extends UnicastRemoteObject implements Print {
 
     @Override
     public String printMessage(String name, String message) throws RemoteException, IOException, InterruptedException {
-        output = new File("/home/paulo/distributed_systems_projects/rmi/Print_project/output.txt");
+        output = new File("./output.txt");
 
         if (!output.exists()) {
             output.createNewFile();
@@ -47,7 +47,7 @@ public class PrintServer extends UnicastRemoteObject implements Print {
                 System.setSecurityManager(new SecurityManager());
             }
             buffer = new ArrayBlockingQueue<PrintRequest>(3);
-            System.setProperty("java.rmi.server.hostname","192.168.15.14");
+            System.setProperty("java.rmi.server.hostname","127.0.0.1");
             Naming.rebind("/PrintServer", new PrintServer());
             System.out.println("PrintServer bound");
             PrinterThread printer0 = new PrinterThread(0, buffer);

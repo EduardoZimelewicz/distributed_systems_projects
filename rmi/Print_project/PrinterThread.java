@@ -20,7 +20,7 @@ public class PrinterThread extends Thread {
         try {
             while (true) {
                 if (buffer.size() > 0) {
-                    File output = new File("/home/paulo/distributed_systems_projects/rmi/Print_project/output.txt");
+                    File output = new File("./output.txt");
                     PrintRequest req = buffer.take();
                     System.out.println("Printer "+id+" is printing");
                     sleep(20000);
