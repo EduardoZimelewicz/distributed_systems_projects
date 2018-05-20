@@ -47,10 +47,13 @@ public class PrintServer extends UnicastRemoteObject implements Print {
                 System.setSecurityManager(new SecurityManager());
             }
             buffer = new ArrayBlockingQueue<PrintRequest>(3);
-            Naming.rebind("//localhost/PrintServer", new PrintServer());
+            System.setProperty("java.rmi.server.hostname","192.168.15.14");
+            Naming.rebind("/PrintServer", new PrintServer());
             System.out.println("PrintServer bound");
             PrinterThread printer0 = new PrinterThread(0, buffer);
             PrinterThread printer1 = new PrinterThread(1,buffer);
+            printer0.start();
+            printer1.start();
         } catch (Exception e) {
             System.out.println("failed to bound");
             e.printStackTrace();

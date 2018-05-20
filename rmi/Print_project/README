@@ -1,0 +1,3 @@
+Dont forget to change file path at PrinterThread line 23
+
+Dont Forget to change ip adress at PrintServer line 50 and PrintClient line 24

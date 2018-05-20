@@ -13,7 +13,6 @@ public class PrinterThread extends Thread {
     public PrinterThread(int id, ArrayBlockingQueue<PrintRequest> buffer) {
         this.id = id;
         this.buffer = buffer;
-        start();
     }
 
     @Override
@@ -23,11 +22,13 @@ public class PrinterThread extends Thread {
                 if (buffer.size() > 0) {
                     File output = new File("/home/paulo/distributed_systems_projects/rmi/Print_project/output.txt");
                     PrintRequest req = buffer.take();
+                    System.out.println("Printer "+id+" is printing");
+                    sleep(20000);
                     FileWriter writer = new FileWriter(output, true);
                     writer.write("printer"+id+"("+req.name + ": " + req.message + ")\n");
-                    System.out.println("printed");
+                    System.out.println("printer "+id+" is done printing");
                     writer.close();
-                    sleep(20000);
+                    
                 }
             }
         } catch (Exception e) {

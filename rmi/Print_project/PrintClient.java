@@ -3,14 +3,10 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 
-public class PrintClient {
-    public static ArrayList<Thread> clients = new ArrayList<Thread>(); //size must be 5
-    public static ArrayList<Thread> buffer = new ArrayList<Thread>(); //size must be 3
-    //only 2 printers  
+public class PrintClient {  
 
     public static void main(String[] args) throws MalformedURLException, RemoteException, 
         NotBoundException, InterruptedException, IOException {
@@ -20,14 +16,14 @@ public class PrintClient {
         }
 
         Scanner keyboard = new Scanner(System.in);
-        System.out.println("What is your name?");
+        System.out.println("What is your name?\n");
         String name = keyboard.nextLine();
-        System.out.println("What would you like to print?(Type end to stop)");
+        System.out.println("\nWhat would you like to print?(Type end to stop)\n");
         String message = keyboard.nextLine();
         while(!message.equals("end")){
-            Print printer = (Print) Naming.lookup("//localhost/PrintServer");
+            Print printer = (Print) Naming.lookup("//192.168.15.14/PrintServer");
             System.out.println(printer.printMessage(name, message));
-            System.out.println("What would you like to print next?(Type end to stop)");
+            System.out.println("\nWhat would you like to print next?(Type end to stop)\n");
             message = keyboard.nextLine();
         }
         keyboard.close();
