@@ -1,47 +1,71 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.Thread.State;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+
 
 public class PrintServer extends UnicastRemoteObject implements Print {
-    
+
     private static final long serialVersionUID = 1L;
     private File output;
-    private FileWriter writer;
+    //private FileWriter writer;
+    private static ArrayBlockingQueue<PrintRequest> buffer;
 
-    public PrintServer() throws RemoteException{
+    public PrintServer() throws RemoteException {
         super();
     }
 
     @Override
-    public String printMessage(String message) throws RemoteException, IOException{
-        output = new File("/home/eduardo/distributed_systems_projects/rmi/Print_project/output.txt");
+    public String printMessage(String name, String message) throws RemoteException, IOException, InterruptedException {
+        output = new File("/home/paulo/distributed_systems_projects/rmi/Print_project/output.txt");
 
-        if(!output.exists()){
+        if (!output.exists()) {
             output.createNewFile();
         }
-
-        writer = new FileWriter(output, true);
-        writer.write(message);
-        writer.close();
-
-        return "Printed to output.txt";
+        if (buffer.size() == 3) {
+            return "\nBuffer is full. Try again later.";
+        }
+        /*if (printer0.getState() != State.TIMED_WAITING) {
+            writer = new FileWriter(output, true);
+            writer.write(name + ": " + message + "\n");
+            System.out.println("printed");
+            writer.close();
+            printer0.sleep(10000);
+            return "Printed to output.txt";
+        } else if (printer1.getState()!= State.TIMED_WAITING) {
+            writer = new FileWriter(output, true);
+            writer.write(name + ": " + message + "\n");
+            System.out.println("printed");
+            writer.close();
+            printer1.sleep(10000);
+            return "Printed to output.txt";
+        }*/
+        else{
+            PrintRequest req = new PrintRequest(name,message);
+            
+            buffer.put(req);
+            return "\nYour message will be printed soon.";
+        }
     }
 
-    public static void main (String [] args){
+    public static void main(String[] args) {
         try {
-            if(System.getSecurityManager() == null){
+            if (System.getSecurityManager() == null) {
                 System.setSecurityManager(new SecurityManager());
             }
-    
+            buffer = new ArrayBlockingQueue<PrintRequest>(3);
             Naming.rebind("//localhost/PrintServer", new PrintServer());
             System.out.println("PrintServer bound");
-        }
-        catch (Exception e){
+            PrinterThread printer0 = new PrinterThread(0, buffer);
+            PrinterThread printer1 = new PrinterThread(1,buffer);
+        } catch (Exception e) {
             System.out.println("failed to bound");
             e.printStackTrace();
         }

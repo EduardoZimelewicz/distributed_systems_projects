@@ -1,0 +1,9 @@
+
+
+printer0(paulo: oi)
+printer1(croata: oi)
+printer0(albino: oi)
+printer1(paulo: kakakak)
+printer0(paulo: rs)
+printer1(croata: dropa uma akzinha)
+printer0(albino: sou dessas)

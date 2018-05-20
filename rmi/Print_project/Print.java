@@ -3,5 +3,5 @@ import java.rmi.RemoteException;
 import java.io.IOException;
 
 public interface Print extends Remote {
-   public String printMessage (String message) throws RemoteException, IOException;
+   public String printMessage (String name, String message) throws RemoteException, IOException, InterruptedException;
 }
