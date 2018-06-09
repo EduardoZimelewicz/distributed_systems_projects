@@ -1,0 +1,4 @@
+mpi_head:
+  image: openmpi
+  ports: 
+   - "22"
