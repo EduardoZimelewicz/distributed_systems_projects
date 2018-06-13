@@ -18,6 +18,6 @@ docker build -f Dockerfile.client -t print-client .
 After that, to see results ssh into the container
 
 ```
-docker exec -i -t <container-name> /bin/bash
+docker exec -i -t <server-container-name> /bin/bash
 ```
 
