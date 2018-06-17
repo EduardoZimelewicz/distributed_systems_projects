@@ -21,7 +21,7 @@ public class PrintClient {
         System.out.println("\nWhat would you like to print?(Type end to stop)\n");
         String message = keyboard.nextLine();
         while(!message.equals("end")){
-            Print printer = (Print) Naming.lookup("//172.17.0.2/PrintServer");
+            Print printer = (Print) Naming.lookup("//127.0.0.1/PrintServer");
             System.out.println(printer.printMessage(name, message));
             System.out.println("\nWhat would you like to print next?(Type end to stop)\n");
             message = keyboard.nextLine();

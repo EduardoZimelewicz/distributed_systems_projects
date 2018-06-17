@@ -47,7 +47,7 @@ public class PrintServer extends UnicastRemoteObject implements Print {
                 System.setSecurityManager(new SecurityManager());
             }
             buffer = new ArrayBlockingQueue<PrintRequest>(3);
-            System.setProperty("java.rmi.server.hostname","172.17.0.2");
+            System.setProperty("java.rmi.server.hostname","127.0.0.1");
             Naming.rebind("/PrintServer", new PrintServer());
             System.out.println("PrintServer bound");
             PrinterThread printer0 = new PrinterThread(0, buffer);
