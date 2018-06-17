@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <math.h>
 #include <float.h>
+#include <time.h>
 
 typedef struct Ponto{
 	double x;
@@ -58,22 +59,28 @@ int assign_point(Ponto* pts, int numPoints, Cluster* clts, int numClusters) { //
 	return stable;
 }
 
-// Made a little change here for testing with more points
-int main (int argc, char *argv[]) {
-	Ponto points[11] = { {x:1.0, y:1.0, id_cluster:-1},
-		{x:1.5, y:2.0, id_cluster:-1},
-		{x:3.0, y:4.0, id_cluster:-1},
-		{x:5.0, y:7.0, id_cluster:-1},
-		{x:3.5, y:5.0, id_cluster:-1},
-		{x:4.5, y:5.0, id_cluster:-1},
-		{x:3.5, y:4.5, id_cluster:-1},
-		{x:2.5, y:1.5, id_cluster:-1},
-		{x:8.0, y:7.5, id_cluster:-1},
-		{x:9.0, y:8.0, id_cluster:-1},
-		{x:-2.5, y:-1.5, id_cluster:-1}
-	};
+double generateRandomNumber(int min, int max){
+    int ret = min + rand()%(max-min);
+    double parsedRet = (double) ret;
+    return parsedRet;
+}
 
-	// Made a little change for testing with one more cluster...
+void generatePoints(Ponto* points, int numberOfPoints){
+	srand(time(NULL));   
+	int i;
+	for (i=0;i<numberOfPoints;i++){
+        Ponto temp = {x: generateRandomNumber(-50,50),y:generateRandomNumber(-50,50), id_cluster:-1};
+        points[i] = temp;
+	}
+}
+
+int main (int argc, char *argv[]) {
+
+	int qtyPoints = argc>=2?atoi(argv[1]):100;
+	Ponto points[qtyPoints];
+
+	generatePoints(points, qtyPoints);
+
 	Cluster clusters[3] = { {x_centroid:0.0, y_centroid:0.0},
 		{x_centroid:7.5, y_centroid:7.6},
 		{x_centroid:3.75, y_centroid:3.8}
@@ -119,6 +126,8 @@ int main (int argc, char *argv[]) {
 
 
 	if(task_id == 0){
+		struct timespec start, end;
+		clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 		int stable = 0;
 		while(!stable){
 			//Define myPoints Clusters and save x and y from current Cluster
@@ -179,11 +188,14 @@ int main (int argc, char *argv[]) {
 			}
 			MPI_Bcast(&stable, 1, MPI_INT, 0, MPI_COMM_WORLD);
 		}
-
+		
+		clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+		uint delta_us = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000;
+		printf("Time for execution: %u miliseconds\n", delta_us);
 		int itr_points;
-		for(itr_points = 0; itr_points < chunk_size; itr_points++){
-			printf("Ponto ( %f, %f ) no cluster %d\n", myPoints[itr_points].x, myPoints[itr_points].y, myPoints[itr_points].id_cluster);
-		}            
+		// for(itr_points = 0; itr_points < chunk_size; itr_points++){
+		// 	printf("Ponto ( %f, %f ) no cluster %d\n", myPoints[itr_points].x, myPoints[itr_points].y, myPoints[itr_points].id_cluster);
+		// }            
 	}
 	else{
 		int stable = 0;
@@ -234,9 +246,9 @@ int main (int argc, char *argv[]) {
 			MPI_Bcast(&stable, 1, MPI_INT, 0, MPI_COMM_WORLD);
 		}
 		int itr_points;
-		for(itr_points = 0; itr_points < chunk_size; itr_points++){
-			printf("Ponto ( %f, %f ) no cluster %d\n", myPoints[itr_points].x, myPoints[itr_points].y, myPoints[itr_points].id_cluster);
-		}          
+		// for(itr_points = 0; itr_points < chunk_size; itr_points++){
+		// 	printf("Ponto ( %f, %f ) no cluster %d\n", myPoints[itr_points].x, myPoints[itr_points].y, myPoints[itr_points].id_cluster);
+		// }          
 	}
 
 	MPI_Finalize();
