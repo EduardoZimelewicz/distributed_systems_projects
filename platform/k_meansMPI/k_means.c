@@ -252,8 +252,11 @@ int main (int argc, char *argv[]) {
 		// 	printf("Ponto ( %f, %f ) no cluster %d\n", myPoints[itr_points].x, myPoints[itr_points].y, myPoints[itr_points].id_cluster);
 		// }          
 	}
+	
 	time2 = MPI_Wtime();
+	if(task_id == 0){	
+		printf( "Elapsed time is %f\n", time2 - time1);
+	}
 	MPI_Finalize();
-	printf( "Elapsed time is %f\n", time2 - time1);
 	return 0;
 }
