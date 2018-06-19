@@ -87,9 +87,10 @@ int main (int argc, char *argv[]) {
 	};
 
 
-	int num_tasks, task_id, dest, source, offset, tag_1, tag_2, chunk_size;
+	int num_tasks, task_id, dest, source, offset, tag_1, tag_2, chunk_sizei, time1, time2;
 	MPI_Status status;
 	MPI_Init(&argc, &argv);
+	time1 = MPI_Wtime();
 	MPI_Comm_size(MPI_COMM_WORLD, &num_tasks);
 
 	MPI_Datatype MPI_INFOTYPE;
@@ -250,7 +251,7 @@ int main (int argc, char *argv[]) {
 		// 	printf("Ponto ( %f, %f ) no cluster %d\n", myPoints[itr_points].x, myPoints[itr_points].y, myPoints[itr_points].id_cluster);
 		// }          
 	}
-
+	time2 = MPI_Wtime();
 	MPI_Finalize();
 	return 0;
 }
