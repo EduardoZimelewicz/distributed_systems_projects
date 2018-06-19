@@ -87,7 +87,8 @@ int main (int argc, char *argv[]) {
 	};
 
 
-	int num_tasks, task_id, dest, source, offset, tag_1, tag_2, chunk_sizei, time1, time2;
+	int num_tasks, task_id, dest, source, offset, tag_1, tag_2, chunk_size;
+	double time1, time2;
 	MPI_Status status;
 	MPI_Init(&argc, &argv);
 	time1 = MPI_Wtime();
@@ -192,7 +193,7 @@ int main (int argc, char *argv[]) {
 		
 		clock_gettime(CLOCK_MONOTONIC_RAW, &end);
 		uint delta_us = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000;
-		printf("Time for execution: %u miliseconds\n", delta_us);
+		//printf("Time for execution: %u miliseconds\n", delta_us);
 		int itr_points;
 		// for(itr_points = 0; itr_points < chunk_size; itr_points++){
 		// 	printf("Ponto ( %f, %f ) no cluster %d\n", myPoints[itr_points].x, myPoints[itr_points].y, myPoints[itr_points].id_cluster);
