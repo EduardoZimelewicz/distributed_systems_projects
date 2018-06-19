@@ -253,5 +253,6 @@ int main (int argc, char *argv[]) {
 	}
 	time2 = MPI_Wtime();
 	MPI_Finalize();
+	printf( "Elapsed time is %f\n", time2 - time1);
 	return 0;
 }
