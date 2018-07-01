@@ -174,7 +174,7 @@ int main (int argc, char *argv[]) {
 			for(i = 1; i < num_tasks; i++){
 				MPI_Recv(&aux,1, MPI_INT, i, 50, MPI_COMM_WORLD, &status);	
 				if(!aux){
-					stable = 1;
+					stable = 0;
 				}
 			}
 			MPI_Bcast(&stable, 1, MPI_INT, 0, MPI_COMM_WORLD);
