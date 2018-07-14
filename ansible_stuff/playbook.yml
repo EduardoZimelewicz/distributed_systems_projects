@@ -1,0 +1,62 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Add the webupd8 APT repository
+      apt_repository: repo="deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" state=present
+    
+    - name: Automatically select the Oracle License
+      shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+      changed_when: false
+    
+    - name: Install Oracle Java
+      apt: name={{item}} state=present force=yes
+      with_items:
+      - oracle-java8-installer
+
+    - name: Set JAVA_HOME
+      shell: echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >> ~/.bashrc
+    
+    - name: Install openmpi
+      apt: name={{ item }} state=present
+      with_items:
+      - openmpi-bin
+      - openmpi-doc
+      - libopenmpi-dev
+
+    - name: copy ansible config
+      copy:
+        src: ansible.cfg
+        dest: /home/ubuntu/
+
+    - name: copy ansible hosts
+      copy:
+        src: hosts
+        dest: /home/ubuntu/
+
+    - name: Copy ssh
+      copy:
+        src: uff_sd_key_aws.pem
+        dest: /home/ubuntu/.ssh/id_rsa
+        mode: 400
+    
+    - name: Copy k_means
+      copy:
+        src: k_means.c
+        dest: /home/ubuntu/
+
+    - name: Copy run.sh
+      copy:
+        src: run.sh
+        dest: /home/ubuntu/
+        mode: +x
+
+    - name: Copy my_hosts
+      copy:
+        src: my_hosts
+        dest: /home/ubuntu/
+
+    - name: Copy rmi project
+      copy:
+        src: print_server/
+        dest: /home/ubuntu/
